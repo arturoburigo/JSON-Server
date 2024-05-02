@@ -1,9 +1,14 @@
+import { useContext } from "react";
 import { Header } from "../../components/Header";
 import { SearchForm } from "../../components/SearchForm";
 import { Summary } from "../../components/Summary";
 import { PriceHighlight, TransactionsContainer, TransactionsTable } from "./styles";
+import { TransactionContext } from "../../contexts/TransactionsContext";
+import { dateFormatter, priceFormatter } from "../../utils/formatter";
 
 export function Transactions() {
+  const {transactions} = useContext(TransactionContext)
+  console.log(transactions)
   return (
     <div>
       <Header />
@@ -11,26 +16,23 @@ export function Transactions() {
       <TransactionsContainer>
         <SearchForm/>
         <TransactionsTable>
-          <tr>
-            <td width="50%">Site WebDevolpment</td>
-            <td>
-              <PriceHighlight variant="income">
-                $ 12.000,00
-              </PriceHighlight>
-            </td>
-            <td>Salary</td>
-            <td>04/12/2024</td>
-          </tr> 
-          <tr>
-            <td width="50%">Wendy's</td>
-            <td>
-              <PriceHighlight variant="outcome">
-                - $ 59,00
-              </PriceHighlight>
-            </td>
-            <td>Food</td>
-            <td>04/12/2024</td>
-          </tr> 
+          <tbody>
+            {transactions.map(transactions => {
+              return (
+                <tr key={transactions.id}>
+                  <td width="50%">{transactions.description}</td>
+                  <td>
+                    <PriceHighlight variant={transactions.type}>
+                      {transactions.type === 'outcome' && '- '}
+                      {priceFormatter.format(transactions.price)}
+                    </PriceHighlight>
+                  </td>
+                  <td>{transactions.category}</td>
+                  <td>{dateFormatter.format(new Date(transactions.createdAt))}</td>
+                </tr> 
+              )
+            })}
+          </tbody>
         </TransactionsTable>
       </TransactionsContainer>
     </div>
